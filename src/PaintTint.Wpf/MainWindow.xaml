@@ -403,12 +403,21 @@
                                 </DataGrid.Columns>
                             </DataGrid>
 
-                            <!-- Placeholder when empty -->
+                            <!-- Placeholder when empty (shows when data NOT present, hides when data IS present) -->
                             <TextBlock Text="Select a shade and base to view formula breakdown"
-                                       Style="{StaticResource CaptionStyle}"
                                        HorizontalAlignment="Center"
-                                       VerticalAlignment="Center"
-                                       Visibility="{Binding CalculatedItems.Count, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=invert}" />
+                                       VerticalAlignment="Center">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock" BasedOn="{StaticResource CaptionStyle}">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding HasCalculatedItems}" Value="False">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
                         </Grid>
                     </Border>
 

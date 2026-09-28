@@ -124,6 +124,12 @@ public partial class MainViewModel : ObservableObject
     private ObservableCollection<CalculatedColorantItemDto> _calculatedItems = new();
 
     /// <summary>
+    /// Indicates whether formula colorant items are available and displayed.
+    /// </summary>
+    [ObservableProperty]
+    private bool _hasCalculatedItems;
+
+    /// <summary>
     /// Total volume of colorants required in millilitres.
     /// </summary>
     [ObservableProperty]
@@ -442,6 +448,7 @@ public partial class MainViewModel : ObservableObject
             {
                 CalculatedItems.Add(item);
             }
+            HasCalculatedItems = CalculatedItems.Count > 0;
 
             TotalColorantMl = res.TotalColorantMl;
             TintPercent = res.TintPercent;
@@ -624,6 +631,7 @@ public partial class MainViewModel : ObservableObject
     private void ClearCalculation()
     {
         CalculatedItems.Clear();
+        HasCalculatedItems = false;
         TotalColorantMl = 0m;
         TintPercent = 0m;
         TotalPrice = 0m;
