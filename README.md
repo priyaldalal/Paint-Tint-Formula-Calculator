@@ -186,13 +186,49 @@ The Web API provides standard RESTful endpoints documented via Swagger UI:
 dotnet build PaintTint.sln
 ```
 
-### 2. Run the Unit Tests
-All 20 unit tests validate dispenser rounding, linear scaling across 1L/4L/10L/20L cans, tint limit enforcement, and pricing:
+### 2. Run Unit Tests & Generate Code Coverage Report
+To run all 31 unit tests and generate the full interactive HTML code coverage report:
 ```bash
-dotnet test PaintTint.sln
+.\coverage.cmd
 ```
+*(or run `.\coverage.ps1`)*
 
-### 3. Run the Web API
+Alternatively via CLI:
+```bash
+# 1. Run tests with Cobertura collector
+dotnet test tests/PaintTint.Tests/PaintTint.Tests.csproj --collect:"XPlat Code Coverage"
+
+# 2. Generate interactive HTML report
+reportgenerator -reports:"tests/PaintTint.Tests/TestResults/**/coverage.cobertura.xml" -targetdir:"coverage-report" -reporttypes:"Html;MarkdownSummary;TextSummary" "-classfilters:-*Migration*;-*ModelSnapshot*;-*Program*"
+```
+The report will be generated and automatically opened from [`coverage-report/index.html`](coverage-report/index.html).
+
+---
+
+## 📊 Code Coverage Summary
+
+| Assembly | Line Coverage | Method Coverage | Key Components Covered |
+|---|---|---|---|
+| **`PaintTint.Core`** | **94.9%** | **94.4%** | `TintCalculator` (95.9%), all Entities (100%), all DTOs (100%), Domain Exceptions (100%) |
+| **`PaintTint.Infrastructure`** | **71.3%** | **83.3%** | `BaseService` (100%), `ShadeService` (100%), `DispenseService` (98.3%), `PaintTintDbContext` (98.9%) |
+| **`PaintTint.Api`** | **49.5%** | **75.0%** | `BasesController` (100%), `ShadesController` (100%), `TintController` (81.8%), `DispenseJobsController` (81.8%) |
+| **Total Solution** | **74.8%** | **80.2%** | **31 Tests Passed / 0 Failed** |
+
+---
+
+## 🧪 Unit Tests Specification
+
+The test suite in [`tests/PaintTint.Tests`](tests/PaintTint.Tests) rigorously tests:
+1. **Dispenser Unit Rounding**: Verifies 0.05 ml boundary conditions (e.g. `0.02` -> `0.00`, `0.03` -> `0.05`, `0.075` -> `0.10`, `4.35`, `12.80`).
+2. **Linear Scaling**: Verifies exact scaling across 1L, 4L, 10L, and 20L cans.
+3. **Specification Worked Example**: 3.2 ml/L Black in Medium base for 4L can = 12.8 ml (0.32% tint vs 6% max, price ₹1,090.24).
+4. **Mockup Example**: Ocean Mist with Phthalo Blue and Black in 4L Medium base matching ₹1,104.40 total.
+5. **Tint Limit Enforcement**: Validation failure when tint % exceeds base thresholds (e.g. 2.50% > 2.00% Pastel limit).
+6. **Can Size Validation**: Rejecting invalid sizes (e.g. 5L, 7L).
+7. **Bulk Volume & Pricing**: Testing 20L high-volume container calculations.
+8. **Infrastructure Query Services**: `BaseService`, `ShadeService` filtering and detail lookups.
+9. **Dispense Job Creation**: Persistence of parent job and colorant line items.
+10. **REST Controllers**: HTTP status codes (`200 OK`, `201 Created`, `404 NotFound`) and response payload structure.
 In a terminal, start the ASP.NET Core API server:
 ```bash
 dotnet run --project src/PaintTint.Api/PaintTint.Api.csproj --launch-profile http

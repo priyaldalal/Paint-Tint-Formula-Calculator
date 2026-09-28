@@ -17,6 +17,7 @@
 # Test results
 TestResults/
 [Tt]est[Rr]esult*/
+coverage-report/
 
 # OS generated
 .DS_Store
