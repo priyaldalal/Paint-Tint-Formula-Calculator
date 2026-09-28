@@ -264,7 +264,7 @@ public partial class MainViewModel : ObservableObject
     {
         bool connected = await _apiClient.CheckConnectionAsync();
         IsConnected = connected;
-        ConnectionStatusText = connected ? "Connected to API (http://localhost:5000)" : "Disconnected from API (retrying...)";
+        ConnectionStatusText = connected ? "Connected to API (http://localhost:5000)" : "Offline";
     }
 
     private async Task LoadLatestJobAsync()

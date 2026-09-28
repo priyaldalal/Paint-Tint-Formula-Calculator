@@ -95,6 +95,25 @@ public static class ScreenshotGenerator
                 SaveWindowToPng(window, Path.Combine(docsDir, "app_dispense_history.png"));
             }
 
+            // 4. Capture Offline Screen (API not connected)
+            {
+                var offlineClient = new MockOfflineApiClient();
+                var vm = new MainViewModel(offlineClient);
+                vm.InitializeAsync().GetAwaiter().GetResult();
+                vm.IsHistoryOpen = false;
+
+                var window = new MainWindow(vm)
+                {
+                    Width = 1320,
+                    Height = 780
+                };
+                window.Measure(new Size(1320, 780));
+                window.Arrange(new Rect(0, 0, 1320, 780));
+                window.UpdateLayout();
+
+                SaveWindowToPng(window, Path.Combine(docsDir, "app_offline_screen.png"));
+            }
+
             File.AppendAllText(logPath, "All screenshots saved successfully!\n");
         }
         catch (Exception ex)
@@ -238,4 +257,16 @@ public class MockScreenshotApiClient : ITintApiClient
             new() { Id = 1039, ShadeName = "Sage Green", ShadeCode = "SG-205", BaseName = "Medium", CanSizeLitres = 1L, TotalColorantMl = 16.50m, TintPercent = 1.65m, TotalPrice = 286.00m }
         };
     }
+}
+
+public class MockOfflineApiClient : ITintApiClient
+{
+    public Task<bool> CheckConnectionAsync(CancellationToken cancellationToken = default) => Task.FromResult(false);
+    public Task<List<BaseDto>> GetBasesAsync(CancellationToken cancellationToken = default) => Task.FromResult(new List<BaseDto>());
+    public Task<List<ShadeSummaryDto>> GetShadesAsync(string? search = null, CancellationToken cancellationToken = default) => Task.FromResult(new List<ShadeSummaryDto>());
+    public Task<ShadeDetailDto?> GetShadeByIdAsync(int id, CancellationToken cancellationToken = default) => Task.FromResult<ShadeDetailDto?>(null);
+    public Task<CalculateTintResponse> CalculateAsync(CalculateTintRequest request, CancellationToken cancellationToken = default) => throw new InvalidOperationException("Offline");
+    public Task<DispenseJobResponse> CreateDispenseJobAsync(CreateDispenseJobRequest request, CancellationToken cancellationToken = default) => throw new InvalidOperationException("Offline");
+    public Task<List<DispenseJobResponse>> GetRecentJobsAsync(int limit = 10, CancellationToken cancellationToken = default) => Task.FromResult(new List<DispenseJobResponse>());
+    public Task<DispenseJobResponse?> GetLatestJobAsync(CancellationToken cancellationToken = default) => Task.FromResult<DispenseJobResponse?>(null);
 }
