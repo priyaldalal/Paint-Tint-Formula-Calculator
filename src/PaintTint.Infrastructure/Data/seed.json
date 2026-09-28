@@ -1,0 +1,111 @@
+{
+  "bases": [
+    { "id": 1, "name": "Pastel", "maxTintPercent": 2.00, "pricePerLitre": 250.00 },
+    { "id": 2, "name": "Medium", "maxTintPercent": 6.00, "pricePerLitre": 270.00 },
+    { "id": 3, "name": "Deep", "maxTintPercent": 12.00, "pricePerLitre": 290.00 }
+  ],
+  "colorants": [
+    { "id": 1, "code": "C01", "name": "Black", "costPerMl": 0.80 },
+    { "id": 2, "code": "C02", "name": "Oxide Red", "costPerMl": 0.90 },
+    { "id": 3, "code": "C03", "name": "Phthalo Blue", "costPerMl": 1.20 },
+    { "id": 4, "code": "C04", "name": "Yellow Oxide", "costPerMl": 0.85 },
+    { "id": 5, "code": "C05", "name": "Phthalo Green", "costPerMl": 1.15 },
+    { "id": 6, "code": "C06", "name": "Magenta", "costPerMl": 1.30 }
+  ],
+  "shades": [
+    {
+      "id": 1,
+      "code": "OM-201",
+      "name": "Ocean Mist",
+      "hex": "#7FA7B5",
+      "formulas": [
+        {
+          "baseId": 2,
+          "items": [
+            { "colorantId": 3, "mlPerLitre": 4.35 },
+            { "colorantId": 1, "mlPerLitre": 1.10 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "code": "TR-115",
+      "name": "Terracotta",
+      "hex": "#C4663F",
+      "formulas": [
+        {
+          "baseId": 3,
+          "items": [
+            { "colorantId": 2, "mlPerLitre": 38.50 },
+            { "colorantId": 4, "mlPerLitre": 22.20 },
+            { "colorantId": 1, "mlPerLitre": 2.05 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "code": "SW-101",
+      "name": "Soft White",
+      "hex": "#F5F5F0",
+      "formulas": [
+        {
+          "baseId": 1,
+          "items": [
+            { "colorantId": 4, "mlPerLitre": 0.35 },
+            { "colorantId": 1, "mlPerLitre": 0.15 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "code": "SG-205",
+      "name": "Sage Green",
+      "hex": "#8A9A86",
+      "formulas": [
+        {
+          "baseId": 2,
+          "items": [
+            { "colorantId": 4, "mlPerLitre": 8.50 },
+            { "colorantId": 5, "mlPerLitre": 6.20 },
+            { "colorantId": 1, "mlPerLitre": 1.80 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "code": "MN-310",
+      "name": "Midnight Navy",
+      "hex": "#1E2D4A",
+      "formulas": [
+        {
+          "baseId": 3,
+          "items": [
+            { "colorantId": 3, "mlPerLitre": 42.00 },
+            { "colorantId": 1, "mlPerLitre": 28.50 },
+            { "colorantId": 6, "mlPerLitre": 5.10 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "code": "CR-220",
+      "name": "Coral Rose",
+      "hex": "#E07A5F",
+      "formulas": [
+        {
+          "baseId": 2,
+          "items": [
+            { "colorantId": 2, "mlPerLitre": 12.40 },
+            { "colorantId": 4, "mlPerLitre": 6.30 },
+            { "colorantId": 6, "mlPerLitre": 3.10 }
+          ]
+        }
+      ]
+    }
+  ]
+}
