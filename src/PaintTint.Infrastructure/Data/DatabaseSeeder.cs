@@ -87,12 +87,6 @@ public static class DatabaseSeeder
 {
     public static async Task SeedAsync(PaintTintDbContext context, string? seedJsonPath = null)
     {
-        // Check if database already has data
-        if (await context.Bases.AnyAsync())
-        {
-            return; // Already seeded
-        }
-
         string jsonContent = string.Empty;
 
         // Try candidate locations for seed.json
@@ -127,6 +121,13 @@ public static class DatabaseSeeder
 
         var seedData = JsonSerializer.Deserialize<SeedDataFormat>(jsonContent, options)
             ?? throw new InvalidOperationException("Failed to deserialize seed.json.");
+
+        // Check if database already has data
+        if (await context.Bases.AnyAsync())
+        {
+            await SyncFormulasAsync(context, seedData);
+            return;
+        }
 
         // 1. Seed Bases
         foreach (var b in seedData.Bases)
@@ -198,5 +199,57 @@ public static class DatabaseSeeder
         }
 
         await context.SaveChangesAsync();
+    }
+
+    private static async Task SyncFormulasAsync(PaintTintDbContext context, SeedDataFormat seedData)
+    {
+        var shadesByCode = await context.Shades.ToDictionaryAsync(s => s.Code, s => s.Id);
+        var basesByName = await context.Bases.ToDictionaryAsync(b => b.Name, b => b.Id);
+        var seedBaseIdToDbId = seedData.Bases.ToDictionary(b => b.Id, b => basesByName[b.Name]);
+        var colorantsByCode = await context.Colorants.ToDictionaryAsync(c => c.Code, c => c.Id);
+        var seedColorantIdToDbId = seedData.Colorants.ToDictionary(c => c.Id, c => colorantsByCode[c.Code]);
+
+        var existingKeysList = await context.FormulaItems
+            .Select(f => f.ShadeId + "_" + f.BaseId + "_" + f.ColorantId)
+            .ToListAsync();
+        var existingFormulaKeys = existingKeysList.ToHashSet();
+
+        bool added = false;
+        foreach (var s in seedData.Shades)
+        {
+            if (!shadesByCode.TryGetValue(s.Code, out int shadeId))
+                continue;
+
+            foreach (var formula in s.Formulas)
+            {
+                if (!seedBaseIdToDbId.TryGetValue(formula.BaseId, out int baseDbId))
+                    continue;
+
+                foreach (var item in formula.Items)
+                {
+                    if (!seedColorantIdToDbId.TryGetValue(item.ColorantId, out int colorantDbId))
+                        continue;
+
+                    string key = $"{shadeId}_{baseDbId}_{colorantDbId}";
+                    if (!existingFormulaKeys.Contains(key))
+                    {
+                        context.FormulaItems.Add(new FormulaItem
+                        {
+                            ShadeId = shadeId,
+                            BaseId = baseDbId,
+                            ColorantId = colorantDbId,
+                            MlPerLitre = item.MlPerLitre
+                        });
+                        existingFormulaKeys.Add(key);
+                        added = true;
+                    }
+                }
+            }
+        }
+
+        if (added)
+        {
+            await context.SaveChangesAsync();
+        }
     }
 }

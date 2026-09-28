@@ -315,12 +315,40 @@ public partial class MainViewModel : ObservableObject
     {
         if (value != null)
         {
-            _ = OnSelectionChangedAsync();
+            _ = HandleShadeSelectedAsync(value);
         }
         else
         {
             ClearCalculation();
         }
+    }
+
+    private async Task HandleShadeSelectedAsync(ShadeSummaryDto shade)
+    {
+        try
+        {
+            var detail = await _apiClient.GetShadeByIdAsync(shade.Id);
+            if (detail != null && detail.Formulas.Count > 0)
+            {
+                bool isCurrentBaseValid = SelectedBase != null && detail.Formulas.Any(f => f.BaseId == SelectedBase.Id);
+                if (!isCurrentBaseValid)
+                {
+                    int recommendedBaseId = detail.Formulas[0].BaseId;
+                    var matchingBase = Bases.FirstOrDefault(b => b.Id == recommendedBaseId);
+                    if (matchingBase != null)
+                    {
+                        SelectedBase = matchingBase;
+                        return; // SelectedBase change will trigger OnSelectedBaseChanged and calculation
+                    }
+                }
+            }
+        }
+        catch
+        {
+            // Fallback to direct calculation if shade detail lookup fails
+        }
+
+        await CalculateTintAsync();
     }
 
     partial void OnSelectedBaseChanged(BaseDto? value)
@@ -447,7 +475,14 @@ public partial class MainViewModel : ObservableObject
         catch (Exception ex)
         {
             ClearCalculation();
-            ShowInlineError($"Calculation failed: {ex.Message}");
+            if (ex.Message.Contains("No formula available", StringComparison.OrdinalIgnoreCase))
+            {
+                ShowInlineError($"Formula for '{SelectedShade.Name}' ({SelectedShade.Code}) is not available in {SelectedBase.Name} base. Please choose a compatible base.");
+            }
+            else
+            {
+                ShowInlineError($"Calculation failed: {ex.Message}");
+            }
         }
         finally
         {

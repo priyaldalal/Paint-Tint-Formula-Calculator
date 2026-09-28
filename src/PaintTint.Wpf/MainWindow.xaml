@@ -54,7 +54,7 @@
                 <!-- Brand / Logo -->
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                     <Border Width="36" Height="36" CornerRadius="8" Background="{StaticResource PrimaryAccentBrush}" Margin="0,0,14,0">
-                        <TextBlock Text="🎨" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        <Path Data="{StaticResource MaterialIcon_Palette}" Fill="White" Width="20" Height="20" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center" />
                     </Border>
                     <StackPanel VerticalAlignment="Center">
                         <TextBlock Text="Tint Studio" Style="{StaticResource HeadingStyle}" FontSize="20" />
@@ -65,7 +65,8 @@
                 <!-- Store Info & Actions -->
                 <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
                     <Border Background="{StaticResource InputBackgroundBrush}" BorderBrush="{StaticResource CardBorderBrush}" BorderThickness="1" CornerRadius="6" Padding="14,6" Margin="0,0,12,0">
-                        <StackPanel Orientation="Horizontal">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <Path Data="{StaticResource MaterialIcon_Store}" Fill="{StaticResource TextSecondaryBrush}" Width="14" Height="14" Stretch="Uniform" Margin="0,0,6,0" VerticalAlignment="Center" />
                             <TextBlock Text="Store: " Style="{StaticResource CaptionStyle}" VerticalAlignment="Center" />
                             <TextBlock Text="Demo Store 01" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" VerticalAlignment="Center" />
                         </StackPanel>
@@ -73,8 +74,12 @@
 
                     <Button Style="{StaticResource SecondaryButtonStyle}"
                             Command="{Binding ToggleHistoryCommand}"
-                            Content="📋 Dispense History"
-                            TabIndex="10" />
+                            TabIndex="10">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <Path Data="{StaticResource MaterialIcon_History}" Fill="{StaticResource TextPrimaryBrush}" Width="16" Height="16" Stretch="Uniform" Margin="0,0,8,0" VerticalAlignment="Center" />
+                            <TextBlock Text="Dispense History" FontWeight="SemiBold" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
                 </StackPanel>
             </Grid>
         </Border>
@@ -128,11 +133,12 @@
                         <Button Grid.Column="1"
                                 Style="{StaticResource SecondaryButtonStyle}"
                                 Command="{Binding SearchShadesCommand}"
-                                Content="🔍"
                                 Margin="8,0,0,0"
-                                Padding="10,6"
+                                Padding="12,6"
                                 TabIndex="2"
-                                ToolTip="Search Shades (Press Enter)" />
+                                ToolTip="Search Shades (Press Enter)">
+                            <Path Data="{StaticResource MaterialIcon_Magnify}" Fill="{StaticResource TextPrimaryBrush}" Width="14" Height="14" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Button>
                     </Grid>
 
                     <!-- Shade List -->
@@ -420,7 +426,7 @@
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            <TextBlock Grid.Column="0" Text="⚠️" FontSize="18" Margin="0,0,12,0" VerticalAlignment="Center" />
+                            <Path Grid.Column="0" Data="{StaticResource MaterialIcon_AlertCircle}" Fill="#F87171" Width="20" Height="20" Stretch="Uniform" Margin="0,0,12,0" VerticalAlignment="Center" />
                             <TextBlock Grid.Column="1"
                                        Text="{Binding InlineErrorMessage}"
                                        Foreground="#FECACA"
@@ -501,8 +507,8 @@
                                         TabIndex="7"
                                         Padding="28,12">
                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                        <TextBlock Text="🪣 " FontSize="16" />
-                                        <TextBlock Text="DISPENSE" FontWeight="Bold" FontSize="15" />
+                                        <Path Data="{StaticResource MaterialIcon_FormatColorFill}" Fill="White" Width="18" Height="18" Stretch="Uniform" Margin="0,0,8,0" VerticalAlignment="Center" />
+                                        <TextBlock Text="DISPENSE" FontWeight="Bold" FontSize="15" VerticalAlignment="Center" />
                                     </StackPanel>
                                 </Button>
                             </Grid>
@@ -544,10 +550,14 @@
 
                     <Button Style="{StaticResource SecondaryButtonStyle}"
                             Command="{Binding RefreshConnectionCommand}"
-                            Content="⟳ Retry"
-                            Padding="6,2"
+                            Padding="8,4"
                             Margin="12,0,0,0"
-                            Visibility="{Binding IsConnected, Converter={StaticResource InverseBooleanConverter}, ConverterParameter=invert}" />
+                            Visibility="{Binding IsConnected, Converter={StaticResource InverseBooleanConverter}, ConverterParameter=invert}">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <Path Data="{StaticResource MaterialIcon_Refresh}" Fill="{StaticResource TextPrimaryBrush}" Width="12" Height="12" Stretch="Uniform" Margin="0,0,6,0" VerticalAlignment="Center" />
+                            <TextBlock Text="Retry" FontSize="12" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
                 </StackPanel>
 
                 <!-- Last Dispense Job Indicator -->
@@ -597,19 +607,20 @@
                 Padding="18,14"
                 Visibility="{Binding IsToastVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                <TextBlock Text="✅ " FontSize="16" VerticalAlignment="Center" Margin="0,0,10,0" />
+                <Path Data="{StaticResource MaterialIcon_CheckCircle}" Fill="#34D399" Width="18" Height="18" Stretch="Uniform" Margin="0,0,10,0" VerticalAlignment="Center" />
                 <TextBlock Text="{Binding ToastMessage}"
                            Foreground="#A7F3D0"
                            FontWeight="SemiBold"
                            FontSize="14"
                            VerticalAlignment="Center"
                            Margin="0,0,16,0" />
-                <Button Content="✕"
-                        Style="{StaticResource SecondaryButtonStyle}"
+                <Button Style="{StaticResource SecondaryButtonStyle}"
                         Command="{Binding DismissToastCommand}"
-                        Padding="6,2"
+                        Padding="6,4"
                         Foreground="#A7F3D0"
-                        BorderThickness="0" />
+                        BorderThickness="0">
+                    <Path Data="{StaticResource MaterialIcon_Close}" Fill="#A7F3D0" Width="12" Height="12" Stretch="Uniform" VerticalAlignment="Center" />
+                </Button>
             </StackPanel>
         </Border>
 
@@ -632,11 +643,19 @@
                     </Grid.RowDefinitions>
 
                     <Grid Grid.Row="0" Margin="0,0,0,16">
-                        <TextBlock Text="Dispense Jobs History" Style="{StaticResource HeadingStyle}" />
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <Path Data="{StaticResource MaterialIcon_History}" Fill="{StaticResource PrimaryAccentBrush}" Width="20" Height="20" Stretch="Uniform" Margin="0,0,10,0" VerticalAlignment="Center" />
+                            <TextBlock Text="Dispense Jobs History" Style="{StaticResource HeadingStyle}" VerticalAlignment="Center" />
+                        </StackPanel>
                         <Button HorizontalAlignment="Right"
-                                Content="✕ Close"
                                 Style="{StaticResource SecondaryButtonStyle}"
-                                Command="{Binding CloseHistoryCommand}" />
+                                Command="{Binding CloseHistoryCommand}"
+                                Padding="10,6">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <Path Data="{StaticResource MaterialIcon_Close}" Fill="{StaticResource TextPrimaryBrush}" Width="12" Height="12" Stretch="Uniform" Margin="0,0,6,0" VerticalAlignment="Center" />
+                                <TextBlock Text="Close" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
                     </Grid>
 
                     <DataGrid Grid.Row="1"

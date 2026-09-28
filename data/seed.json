@@ -20,10 +20,24 @@
       "hex": "#7FA7B5",
       "formulas": [
         {
+          "baseId": 1,
+          "items": [
+            { "colorantId": 3, "mlPerLitre": 1.50 },
+            { "colorantId": 1, "mlPerLitre": 0.40 }
+          ]
+        },
+        {
           "baseId": 2,
           "items": [
             { "colorantId": 3, "mlPerLitre": 4.35 },
             { "colorantId": 1, "mlPerLitre": 1.10 }
+          ]
+        },
+        {
+          "baseId": 3,
+          "items": [
+            { "colorantId": 3, "mlPerLitre": 10.00 },
+            { "colorantId": 1, "mlPerLitre": 2.50 }
           ]
         }
       ]
@@ -34,6 +48,14 @@
       "name": "Terracotta",
       "hex": "#C4663F",
       "formulas": [
+        {
+          "baseId": 2,
+          "items": [
+            { "colorantId": 2, "mlPerLitre": 18.00 },
+            { "colorantId": 4, "mlPerLitre": 10.00 },
+            { "colorantId": 1, "mlPerLitre": 1.00 }
+          ]
+        },
         {
           "baseId": 3,
           "items": [
@@ -56,6 +78,13 @@
             { "colorantId": 4, "mlPerLitre": 0.35 },
             { "colorantId": 1, "mlPerLitre": 0.15 }
           ]
+        },
+        {
+          "baseId": 2,
+          "items": [
+            { "colorantId": 4, "mlPerLitre": 1.20 },
+            { "colorantId": 1, "mlPerLitre": 0.60 }
+          ]
         }
       ]
     },
@@ -66,11 +95,27 @@
       "hex": "#8A9A86",
       "formulas": [
         {
+          "baseId": 1,
+          "items": [
+            { "colorantId": 4, "mlPerLitre": 3.20 },
+            { "colorantId": 5, "mlPerLitre": 2.10 },
+            { "colorantId": 1, "mlPerLitre": 0.60 }
+          ]
+        },
+        {
           "baseId": 2,
           "items": [
             { "colorantId": 4, "mlPerLitre": 8.50 },
             { "colorantId": 5, "mlPerLitre": 6.20 },
             { "colorantId": 1, "mlPerLitre": 1.80 }
+          ]
+        },
+        {
+          "baseId": 3,
+          "items": [
+            { "colorantId": 4, "mlPerLitre": 18.00 },
+            { "colorantId": 5, "mlPerLitre": 14.00 },
+            { "colorantId": 1, "mlPerLitre": 4.00 }
           ]
         }
       ]
@@ -81,6 +126,14 @@
       "name": "Midnight Navy",
       "hex": "#1E2D4A",
       "formulas": [
+        {
+          "baseId": 2,
+          "items": [
+            { "colorantId": 3, "mlPerLitre": 20.00 },
+            { "colorantId": 1, "mlPerLitre": 14.00 },
+            { "colorantId": 6, "mlPerLitre": 2.50 }
+          ]
+        },
         {
           "baseId": 3,
           "items": [
@@ -98,11 +151,27 @@
       "hex": "#E07A5F",
       "formulas": [
         {
+          "baseId": 1,
+          "items": [
+            { "colorantId": 2, "mlPerLitre": 4.50 },
+            { "colorantId": 4, "mlPerLitre": 2.20 },
+            { "colorantId": 6, "mlPerLitre": 1.10 }
+          ]
+        },
+        {
           "baseId": 2,
           "items": [
             { "colorantId": 2, "mlPerLitre": 12.40 },
             { "colorantId": 4, "mlPerLitre": 6.30 },
             { "colorantId": 6, "mlPerLitre": 3.10 }
+          ]
+        },
+        {
+          "baseId": 3,
+          "items": [
+            { "colorantId": 2, "mlPerLitre": 25.00 },
+            { "colorantId": 4, "mlPerLitre": 12.00 },
+            { "colorantId": 6, "mlPerLitre": 6.00 }
           ]
         }
       ]
