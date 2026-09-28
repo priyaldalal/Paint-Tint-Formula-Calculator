@@ -1,0 +1,22 @@
+## Visual Studio / .NET
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.sqlite
+*.db
+*.db-shm
+*.db-wal
+
+# Test results
+TestResults/
+[Tt]est[Rr]esult*/
+
+# OS generated
+.DS_Store
+Thumbs.db
