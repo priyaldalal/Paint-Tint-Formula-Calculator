@@ -12,6 +12,7 @@
 *.db
 *.db-shm
 *.db-wal
+*_wpftmp.*
 
 # Test results
 TestResults/
