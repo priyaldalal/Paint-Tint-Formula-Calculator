@@ -324,9 +324,14 @@
                             <TextBlock Text="Can Size" Style="{StaticResource CaptionStyle}" FontWeight="SemiBold" Margin="0,0,0,6" />
                             <ComboBox ItemsSource="{Binding CanSizes}"
                                       SelectedItem="{Binding SelectedCanSize}"
-                                      DisplayMemberPath="Display"
                                       Style="{StaticResource ModernComboBoxStyle}"
-                                      TabIndex="5" />
+                                      TabIndex="5">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Display}" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
                         </StackPanel>
                     </Grid>
 
@@ -497,7 +502,7 @@
                                         Padding="28,12">
                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                         <TextBlock Text="🪣 " FontSize="16" />
-                                        <TextBlock Text="_DISPENSE" FontWeight="Bold" FontSize="15" />
+                                        <TextBlock Text="DISPENSE" FontWeight="Bold" FontSize="15" />
                                     </StackPanel>
                                 </Button>
                             </Grid>
