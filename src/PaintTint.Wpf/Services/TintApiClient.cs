@@ -2,21 +2,14 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
 using PaintTint.Core.DTOs;
+using PaintTint.Wpf.Interfaces;
 
 namespace PaintTint.Wpf.Services;
 
-public interface ITintApiClient
-{
-    Task<bool> CheckConnectionAsync(CancellationToken cancellationToken = default);
-    Task<List<ShadeSummaryDto>> GetShadesAsync(string? search = null, CancellationToken cancellationToken = default);
-    Task<ShadeDetailDto?> GetShadeByIdAsync(int id, CancellationToken cancellationToken = default);
-    Task<List<BaseDto>> GetBasesAsync(CancellationToken cancellationToken = default);
-    Task<CalculateTintResponse> CalculateAsync(CalculateTintRequest request, CancellationToken cancellationToken = default);
-    Task<DispenseJobResponse> CreateDispenseJobAsync(CreateDispenseJobRequest request, CancellationToken cancellationToken = default);
-    Task<DispenseJobResponse?> GetLatestJobAsync(CancellationToken cancellationToken = default);
-    Task<List<DispenseJobResponse>> GetRecentJobsAsync(int limit = 10, CancellationToken cancellationToken = default);
-}
-
+/// <summary>
+/// HTTP client implementation for communicating with the Paint Tint Web API backend.
+/// Features resilient error handling, automatic JSON deserialization, and timeout management.
+/// </summary>
 public class TintApiClient : ITintApiClient
 {
     private readonly HttpClient _httpClient;
@@ -25,6 +18,10 @@ public class TintApiClient : ITintApiClient
         PropertyNameCaseInsensitive = true
     };
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TintApiClient"/> class.
+    /// </summary>
+    /// <param name="baseAddress">The base URL of the API server (defaults to http://localhost:5000).</param>
     public TintApiClient(string baseAddress = "http://localhost:5000")
     {
         _httpClient = new HttpClient
@@ -34,6 +31,7 @@ public class TintApiClient : ITintApiClient
         };
     }
 
+    /// <inheritdoc/>
     public async Task<bool> CheckConnectionAsync(CancellationToken cancellationToken = default)
     {
         try
@@ -47,6 +45,7 @@ public class TintApiClient : ITintApiClient
         }
     }
 
+    /// <inheritdoc/>
     public async Task<List<BaseDto>> GetBasesAsync(CancellationToken cancellationToken = default)
     {
         var response = await _httpClient.GetAsync("api/bases", cancellationToken);
@@ -54,14 +53,18 @@ public class TintApiClient : ITintApiClient
         return await response.Content.ReadFromJsonAsync<List<BaseDto>>(JsonOptions, cancellationToken) ?? new();
     }
 
+    /// <inheritdoc/>
     public async Task<List<ShadeSummaryDto>> GetShadesAsync(string? search = null, CancellationToken cancellationToken = default)
     {
-        string uri = string.IsNullOrWhiteSpace(search) ? "api/shades" : $"api/shades?search={Uri.EscapeDataString(search.Trim())}";
+        string uri = string.IsNullOrWhiteSpace(search) 
+            ? "api/shades" 
+            : $"api/shades?search={Uri.EscapeDataString(search.Trim())}";
         var response = await _httpClient.GetAsync(uri, cancellationToken);
         await EnsureSuccessAsync(response);
         return await response.Content.ReadFromJsonAsync<List<ShadeSummaryDto>>(JsonOptions, cancellationToken) ?? new();
     }
 
+    /// <inheritdoc/>
     public async Task<ShadeDetailDto?> GetShadeByIdAsync(int id, CancellationToken cancellationToken = default)
     {
         var response = await _httpClient.GetAsync($"api/shades/{id}", cancellationToken);
@@ -70,11 +73,12 @@ public class TintApiClient : ITintApiClient
         return await response.Content.ReadFromJsonAsync<ShadeDetailDto>(JsonOptions, cancellationToken);
     }
 
+    /// <inheritdoc/>
     public async Task<CalculateTintResponse> CalculateAsync(CalculateTintRequest request, CancellationToken cancellationToken = default)
     {
         var response = await _httpClient.PostAsJsonAsync("api/tint/calculate", request, cancellationToken);
         
-        // If 400 Bad Request, parse error message from server
+        // If 400 Bad Request, parse friendly validation error message from server response
         if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
         {
             var errorContent = await response.Content.ReadAsStringAsync(cancellationToken);
@@ -91,6 +95,7 @@ public class TintApiClient : ITintApiClient
         return result ?? throw new InvalidOperationException("Failed to deserialize calculation response.");
     }
 
+    /// <inheritdoc/>
     public async Task<DispenseJobResponse> CreateDispenseJobAsync(CreateDispenseJobRequest request, CancellationToken cancellationToken = default)
     {
         var response = await _httpClient.PostAsJsonAsync("api/dispense-jobs", request, cancellationToken);
@@ -107,6 +112,7 @@ public class TintApiClient : ITintApiClient
         return result ?? throw new InvalidOperationException("Failed to deserialize dispense job response.");
     }
 
+    /// <inheritdoc/>
     public async Task<DispenseJobResponse?> GetLatestJobAsync(CancellationToken cancellationToken = default)
     {
         try
@@ -122,6 +128,7 @@ public class TintApiClient : ITintApiClient
         }
     }
 
+    /// <inheritdoc/>
     public async Task<List<DispenseJobResponse>> GetRecentJobsAsync(int limit = 10, CancellationToken cancellationToken = default)
     {
         try
@@ -163,7 +170,7 @@ public class TintApiClient : ITintApiClient
         }
         catch
         {
-            // fallback
+            // fallback to raw text if not valid JSON
         }
         return rawContent;
     }

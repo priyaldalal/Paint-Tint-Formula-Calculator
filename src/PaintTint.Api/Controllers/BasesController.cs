@@ -1,9 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using PaintTint.Core.DTOs;
-using PaintTint.Core.Services;
+using PaintTint.Core.Interfaces;
 
 namespace PaintTint.Api.Controllers;
 
+/// <summary>
+/// API controller for querying available paint base types, tint limits, and pricing.
+/// </summary>
 [ApiController]
 [Route("api/[controller]")]
 [Produces("application/json")]
@@ -11,6 +14,10 @@ public class BasesController : ControllerBase
 {
     private readonly IBaseService _baseService;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BasesController"/> class.
+    /// </summary>
+    /// <param name="baseService">The base query service.</param>
     public BasesController(IBaseService baseService)
     {
         _baseService = baseService;

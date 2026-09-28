@@ -1,6 +1,7 @@
 using PaintTint.Core.DTOs;
 using PaintTint.Core.Entities;
 using PaintTint.Core.Exceptions;
+using PaintTint.Core.Interfaces;
 using PaintTint.Core.Services;
 using Xunit;
 

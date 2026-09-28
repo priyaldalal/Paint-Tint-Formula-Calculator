@@ -1,9 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using PaintTint.Core.DTOs;
-using PaintTint.Core.Services;
+using PaintTint.Core.Interfaces;
 
 namespace PaintTint.Api.Controllers;
 
+/// <summary>
+/// API controller for calculating scaled paint tint formulas, tint percentages, and pricing.
+/// </summary>
 [ApiController]
 [Route("api/[controller]")]
 [Produces("application/json")]
@@ -11,6 +14,10 @@ public class TintController : ControllerBase
 {
     private readonly IDispenseService _dispenseService;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TintController"/> class.
+    /// </summary>
+    /// <param name="dispenseService">The dispense and calculation service.</param>
     public TintController(IDispenseService dispenseService)
     {
         _dispenseService = dispenseService;

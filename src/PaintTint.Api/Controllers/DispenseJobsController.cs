@@ -1,9 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using PaintTint.Core.DTOs;
-using PaintTint.Core.Services;
+using PaintTint.Core.Interfaces;
 
 namespace PaintTint.Api.Controllers;
 
+/// <summary>
+/// API controller for recording and querying physical paint dispensing jobs and past job history.
+/// </summary>
 [ApiController]
 [Route("api/dispense-jobs")]
 [Produces("application/json")]
@@ -11,6 +14,10 @@ public class DispenseJobsController : ControllerBase
 {
     private readonly IDispenseService _dispenseService;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DispenseJobsController"/> class.
+    /// </summary>
+    /// <param name="dispenseService">The dispense operations service.</param>
     public DispenseJobsController(IDispenseService dispenseService)
     {
         _dispenseService = dispenseService;

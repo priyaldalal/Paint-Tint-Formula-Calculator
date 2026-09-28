@@ -2,22 +2,31 @@ using Microsoft.EntityFrameworkCore;
 using PaintTint.Core.DTOs;
 using PaintTint.Core.Entities;
 using PaintTint.Core.Exceptions;
-using PaintTint.Core.Services;
+using PaintTint.Core.Interfaces;
 using PaintTint.Infrastructure.Data;
 
 namespace PaintTint.Infrastructure.Services;
 
+/// <summary>
+/// Service implementation for tint formula calculation and dispense job persistence.
+/// </summary>
 public class DispenseService : IDispenseService
 {
     private readonly PaintTintDbContext _context;
     private readonly ITintCalculator _tintCalculator;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DispenseService"/> class.
+    /// </summary>
+    /// <param name="context">The database context.</param>
+    /// <param name="tintCalculator">The mathematical tint calculation engine.</param>
     public DispenseService(PaintTintDbContext context, ITintCalculator tintCalculator)
     {
         _context = context;
         _tintCalculator = tintCalculator;
     }
 
+    /// <inheritdoc/>
     public async Task<CalculateTintResponse> CalculateAsync(CalculateTintRequest request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -54,6 +63,7 @@ public class DispenseService : IDispenseService
         return _tintCalculator.Calculate(shade, basePaint, request.CanSizeLitres, formulaItems);
     }
 
+    /// <inheritdoc/>
     public async Task<DispenseJobResponse> CreateDispenseJobAsync(CreateDispenseJobRequest request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -97,6 +107,7 @@ public class DispenseService : IDispenseService
         return await MapToJobResponseAsync(job.Id, cancellationToken);
     }
 
+    /// <inheritdoc/>
     public async Task<List<DispenseJobResponse>> GetRecentJobsAsync(int count = 10, CancellationToken cancellationToken = default)
     {
         var jobs = await _context.DispenseJobs
@@ -112,6 +123,7 @@ public class DispenseService : IDispenseService
         return jobs.Select(MapJob).ToList();
     }
 
+    /// <inheritdoc/>
     public async Task<DispenseJobResponse?> GetLatestJobAsync(CancellationToken cancellationToken = default)
     {
         var job = await _context.DispenseJobs

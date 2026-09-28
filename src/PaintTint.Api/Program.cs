@@ -2,6 +2,7 @@ using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using PaintTint.Api.Middleware;
+using PaintTint.Core.Interfaces;
 using PaintTint.Core.Services;
 using PaintTint.Infrastructure.Data;
 using PaintTint.Infrastructure.Services;

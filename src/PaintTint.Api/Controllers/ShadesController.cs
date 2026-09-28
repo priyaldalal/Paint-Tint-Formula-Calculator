@@ -1,9 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using PaintTint.Core.DTOs;
-using PaintTint.Core.Services;
+using PaintTint.Core.Interfaces;
 
 namespace PaintTint.Api.Controllers;
 
+/// <summary>
+/// API controller for browsing and searching paint shades and viewing formulation details.
+/// </summary>
 [ApiController]
 [Route("api/[controller]")]
 [Produces("application/json")]
@@ -11,6 +14,10 @@ public class ShadesController : ControllerBase
 {
     private readonly IShadeService _shadeService;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ShadesController"/> class.
+    /// </summary>
+    /// <param name="shadeService">The shade domain query service.</param>
     public ShadesController(IShadeService shadeService)
     {
         _shadeService = shadeService;

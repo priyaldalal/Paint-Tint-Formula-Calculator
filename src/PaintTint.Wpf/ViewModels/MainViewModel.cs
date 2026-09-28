@@ -4,24 +4,46 @@ using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using PaintTint.Core.DTOs;
+using PaintTint.Wpf.Interfaces;
 using PaintTint.Wpf.Services;
 
 namespace PaintTint.Wpf.ViewModels;
 
+/// <summary>
+/// Represents a can volume selection option (e.g. 1L, 4L, 10L, 20L).
+/// </summary>
 public class CanSizeOption
 {
+    /// <summary>
+    /// Gets or sets the volume in litres.
+    /// </summary>
     public decimal Litres { get; set; }
+
+    /// <summary>
+    /// Gets or sets the friendly display label (e.g., "4 L").
+    /// </summary>
     public string Display { get; set; } = string.Empty;
 
+    /// <summary>
+    /// Returns the display string.
+    /// </summary>
     public override string ToString() => Display;
 }
 
+/// <summary>
+/// Primary ViewModel driving the Paint Tint Dispenser Workstation application.
+/// Manages shade selection, base selection, volume calculation, validation feedback, and dispensing.
+/// </summary>
 public partial class MainViewModel : ObservableObject
 {
     private readonly ITintApiClient _apiClient;
     private readonly DispatcherTimer _toastTimer;
     private readonly DispatcherTimer _connectionPollingTimer;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MainViewModel"/> class.
+    /// </summary>
+    /// <param name="apiClient">The API client service for communicating with the PaintTint REST backend.</param>
     public MainViewModel(ITintApiClient apiClient)
     {
         _apiClient = apiClient;
@@ -54,84 +76,165 @@ public partial class MainViewModel : ObservableObject
 
     #region Observable Properties
 
+    /// <summary>
+    /// Search filter text for looking up paint shades by name or code.
+    /// </summary>
     [ObservableProperty]
     private string _searchText = string.Empty;
 
+    /// <summary>
+    /// Collection of filtered shades currently displayed in the selection list.
+    /// </summary>
     [ObservableProperty]
     private ObservableCollection<ShadeSummaryDto> _shades = new();
 
+    /// <summary>
+    /// Currently selected shade.
+    /// </summary>
     [ObservableProperty]
     private ShadeSummaryDto? _selectedShade;
 
+    /// <summary>
+    /// Available paint bases (e.g., Pastel, Medium, Deep).
+    /// </summary>
     [ObservableProperty]
     private ObservableCollection<BaseDto> _bases = new();
 
+    /// <summary>
+    /// Currently selected paint base.
+    /// </summary>
     [ObservableProperty]
     private BaseDto? _selectedBase;
 
+    /// <summary>
+    /// Available standard container sizes (1L, 4L, 10L, 20L).
+    /// </summary>
     public List<CanSizeOption> CanSizes { get; }
 
+    /// <summary>
+    /// Currently selected container size.
+    /// </summary>
     [ObservableProperty]
     private CanSizeOption _selectedCanSize;
 
+    /// <summary>
+    /// Colorant line items calculated for the current formulation.
+    /// </summary>
     [ObservableProperty]
     private ObservableCollection<CalculatedColorantItemDto> _calculatedItems = new();
 
+    /// <summary>
+    /// Total volume of colorants required in millilitres.
+    /// </summary>
     [ObservableProperty]
     private decimal _totalColorantMl;
 
+    /// <summary>
+    /// Actual tint percentage calculated for the current batch.
+    /// </summary>
     [ObservableProperty]
     private decimal _tintPercent;
 
+    /// <summary>
+    /// Maximum allowed tint percentage for the selected paint base.
+    /// </summary>
     [ObservableProperty]
     private decimal _maxTintPercent;
 
+    /// <summary>
+    /// Total calculated retail price in INR (Base cost + colorant costs).
+    /// </summary>
     [ObservableProperty]
     private decimal _totalPrice;
 
+    /// <summary>
+    /// Formatted total price string with currency symbol.
+    /// </summary>
     [ObservableProperty]
     private string _totalPriceDisplay = "₹0.00";
 
+    /// <summary>
+    /// Text indicator comparing actual tint percentage vs maximum limit.
+    /// </summary>
     [ObservableProperty]
     private string _tintProgressText = "0.00% of 0.00%";
 
+    /// <summary>
+    /// Progress bar percentage value (0 to 100%).
+    /// </summary>
     [ObservableProperty]
     private double _tintProgressValue;
 
+    /// <summary>
+    /// Indicates whether the current formulation is valid and ready to dispense.
+    /// </summary>
     [ObservableProperty]
     private bool _isValid;
 
+    /// <summary>
+    /// Validation error message if the formula exceeds limits.
+    /// </summary>
     [ObservableProperty]
     private string? _inlineErrorMessage;
 
+    /// <summary>
+    /// Indicates whether an inline validation error alert should be shown.
+    /// </summary>
     [ObservableProperty]
     private bool _hasInlineError;
 
+    /// <summary>
+    /// Indicates whether an asynchronous operation is in progress.
+    /// </summary>
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(DispenseCommand))]
     private bool _isBusy;
 
+    /// <summary>
+    /// Message displayed in the loading spinner overlay.
+    /// </summary>
     [ObservableProperty]
     private string _busyMessage = "Loading...";
 
+    /// <summary>
+    /// Indicates whether the WPF client is actively connected to the API backend.
+    /// </summary>
     [ObservableProperty]
     private bool _isConnected;
 
+    /// <summary>
+    /// Status bar connection description text.
+    /// </summary>
     [ObservableProperty]
     private string _connectionStatusText = "Connecting to API...";
 
+    /// <summary>
+    /// Status bar text displaying the most recent completed job number.
+    /// </summary>
     [ObservableProperty]
     private string _lastJobText = "Last job: None";
 
+    /// <summary>
+    /// Indicates whether the toast notification banner is currently visible.
+    /// </summary>
     [ObservableProperty]
     private bool _isToastVisible;
 
+    /// <summary>
+    /// Message content displayed in the toast notification.
+    /// </summary>
     [ObservableProperty]
     private string _toastMessage = string.Empty;
 
+    /// <summary>
+    /// Indicates whether the dispense history slide-over panel is open.
+    /// </summary>
     [ObservableProperty]
     private bool _isHistoryOpen;
 
+    /// <summary>
+    /// List of recent dispense jobs fetched from the backend.
+    /// </summary>
     [ObservableProperty]
     private ObservableCollection<DispenseJobResponse> _recentJobs = new();
 
@@ -139,6 +242,9 @@ public partial class MainViewModel : ObservableObject
 
     #region Lifecycle & Initialization
 
+    /// <summary>
+    /// Initializes data on startup: connects to API, loads bases, shades, and job history.
+    /// </summary>
     public async Task InitializeAsync()
     {
         await CheckConnectionAsync();
@@ -245,6 +351,9 @@ public partial class MainViewModel : ObservableObject
 
     #region Commands
 
+    /// <summary>
+    /// Searches available shades using the current search filter term.
+    /// </summary>
     [RelayCommand]
     public async Task SearchShadesAsync()
     {
@@ -277,6 +386,9 @@ public partial class MainViewModel : ObservableObject
         }
     }
 
+    /// <summary>
+    /// Calculates the scaled colorant breakdown and pricing for the currently selected shade, base, and can size.
+    /// </summary>
     public async Task CalculateTintAsync()
     {
         if (SelectedShade == null || SelectedBase == null || SelectedCanSize == null)
@@ -345,6 +457,9 @@ public partial class MainViewModel : ObservableObject
 
     private bool CanDispense() => !IsBusy && IsValid && SelectedShade != null && SelectedBase != null;
 
+    /// <summary>
+    /// Triggers dispensing for the validated formulation and logs a new dispense job.
+    /// </summary>
     [RelayCommand(CanExecute = nameof(CanDispense))]
     public async Task DispenseAsync()
     {
@@ -383,6 +498,9 @@ public partial class MainViewModel : ObservableObject
         }
     }
 
+    /// <summary>
+    /// Toggles the visibility of the dispense history slide-over panel.
+    /// </summary>
     [RelayCommand]
     public async Task ToggleHistoryAsync()
     {
@@ -393,12 +511,18 @@ public partial class MainViewModel : ObservableObject
         }
     }
 
+    /// <summary>
+    /// Closes the dispense history slide-over panel.
+    /// </summary>
     [RelayCommand]
     public void CloseHistory()
     {
         IsHistoryOpen = false;
     }
 
+    /// <summary>
+    /// Re-checks API connectivity and reloads reference data.
+    /// </summary>
     [RelayCommand]
     public async Task RefreshConnectionAsync()
     {
@@ -411,6 +535,9 @@ public partial class MainViewModel : ObservableObject
         }
     }
 
+    /// <summary>
+    /// Manually dismisses the toast notification banner.
+    /// </summary>
     [RelayCommand]
     public void DismissToast()
     {

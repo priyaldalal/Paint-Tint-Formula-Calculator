@@ -4,24 +4,50 @@ using PaintTint.Core.Exceptions;
 
 namespace PaintTint.Api.Middleware;
 
+/// <summary>
+/// Structured standard API error payload returned on exceptions.
+/// </summary>
 public class ErrorDetails
 {
+    /// <summary>
+    /// Gets or sets the HTTP status code.
+    /// </summary>
     public int StatusCode { get; set; }
+
+    /// <summary>
+    /// Gets or sets the user-friendly error message.
+    /// </summary>
     public string Message { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets additional developer or diagnostics details.
+    /// </summary>
     public string? Details { get; set; }
 }
 
+/// <summary>
+/// ASP.NET Core middleware for capturing unhandled exceptions and returning standard JSON error responses.
+/// </summary>
 public class ExceptionHandlingMiddleware
 {
     private readonly RequestDelegate _next;
     private readonly ILogger<ExceptionHandlingMiddleware> _logger;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ExceptionHandlingMiddleware"/> class.
+    /// </summary>
+    /// <param name="next">The next request delegate in the ASP.NET pipeline.</param>
+    /// <param name="logger">Logger instance.</param>
     public ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger)
     {
         _next = next;
         _logger = logger;
     }
 
+    /// <summary>
+    /// Invokes the middleware for an HTTP context.
+    /// </summary>
+    /// <param name="context">The HTTP context.</param>
     public async Task InvokeAsync(HttpContext context)
     {
         try
@@ -66,3 +92,4 @@ public class ExceptionHandlingMiddleware
         await context.Response.WriteAsync(json);
     }
 }
+

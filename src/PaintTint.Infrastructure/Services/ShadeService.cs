@@ -1,19 +1,27 @@
 using Microsoft.EntityFrameworkCore;
 using PaintTint.Core.DTOs;
-using PaintTint.Core.Services;
+using PaintTint.Core.Interfaces;
 using PaintTint.Infrastructure.Data;
 
 namespace PaintTint.Infrastructure.Services;
 
+/// <summary>
+/// Service implementation for searching and retrieving paint shades and formulas.
+/// </summary>
 public class ShadeService : IShadeService
 {
     private readonly PaintTintDbContext _context;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ShadeService"/> class.
+    /// </summary>
+    /// <param name="context">The database context.</param>
     public ShadeService(PaintTintDbContext context)
     {
         _context = context;
     }
 
+    /// <inheritdoc/>
     public async Task<List<ShadeSummaryDto>> GetShadesAsync(string? search = null, CancellationToken cancellationToken = default)
     {
         var query = _context.Shades.AsNoTracking();
@@ -36,6 +44,7 @@ public class ShadeService : IShadeService
             .ToListAsync(cancellationToken);
     }
 
+    /// <inheritdoc/>
     public async Task<ShadeDetailDto?> GetShadeByIdAsync(int id, CancellationToken cancellationToken = default)
     {
         var shade = await _context.Shades

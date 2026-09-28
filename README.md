@@ -1,9 +1,10 @@
 # Paint Tint Formula Calculator
 
 [![.NET 8](https://img.shields.io/badge/.NET-8.0-blue.svg)](https://dotnet.microsoft.com/download/dotnet/8.0)
-[![Tests Passing](https://img.shields.io/badge/Unit%20Tests-20%20Passed-success.svg)](file:///d:/Repo/Paint-Tint-Formula-Calculator/tests/PaintTint.Tests)
+[![Tests Passing](https://img.shields.io/badge/Unit%20Tests-20%20Passed-success.svg)](tests/PaintTint.Tests)
+[![Architecture](https://img.shields.io/badge/Architecture-Clean%20%2F%20MVVM-purple.svg)](src)
 
-An end-to-end commercial paint tinting calculation and dispensing application built with **.NET 8**, **WPF (MVVM)**, **ASP.NET Core Web API**, and **Entity Framework Core with SQLite**.
+An end-to-end commercial paint tinting calculation and dispensing workstation application built with **.NET 8**, **WPF (MVVM)**, **ASP.NET Core Web API**, and **Entity Framework Core with SQLite**.
 
 ---
 
@@ -41,34 +42,44 @@ Past dispense jobs stored in the database and loaded asynchronously via REST API
 
 ## 🏗️ Architecture & Project Structure
 
-The solution follows Clean Architecture principles:
+The solution strictly adheres to **Clean Architecture** and **Interface Segregation**:
+- All interfaces reside in dedicated `Interfaces/` directories within their respective projects.
+- Core domain logic has zero external dependencies and is 100% unit testable.
+- Comprehensive C# XML documentation comments (`/// <summary>`) are provided on all interfaces, classes, properties, and methods.
 
 ```text
 PaintTint-Formula-Calculator/
 ├── src/
-│   ├── PaintTint.Core/             # Domain entities, DTOs, domain exceptions & TintCalculator
+│   ├── PaintTint.Core/             # Domain entities, DTOs, domain exceptions & interfaces
 │   │   ├── Entities/               # Base, Colorant, Shade, FormulaItem, DispenseJob, DispenseJobItem
-│   │   ├── DTOs/                   # Calculation and transfer objects
+│   │   ├── Interfaces/             # Dedicated interface contracts
+│   │   │   ├── ITintCalculator.cs  # Mathematical scaling, rounding & pricing rules
+│   │   │   ├── IShadeService.cs    # Shade catalog query operations
+│   │   │   ├── IBaseService.cs     # Paint base lookup operations
+│   │   │   └── IDispenseService.cs # Job execution and history persistence
+│   │   ├── DTOs/                   # Calculation and transfer objects (XML documented)
 │   │   ├── Exceptions/             # TintValidationException, NotFoundException
-│   │   └── Services/               # ITintCalculator & pure calculation logic
-│   ├── PaintTint.Infrastructure/   # EF Core DbContext, SQLite migrations, JSON Seeder & Repositories
+│   │   └── Services/               # TintCalculator pure domain service implementation
+│   ├── PaintTint.Infrastructure/   # EF Core DbContext, SQLite migrations, JSON Seeder & Services
 │   │   ├── Data/                   # PaintTintDbContext, DatabaseSeeder, seed.json
 │   │   ├── Migrations/             # EF Core schema migration
-│   │   └── Services/               # ShadeService, BaseService, DispenseService
+│   │   └── Services/               # ShadeService, BaseService, DispenseService implementations
 │   ├── PaintTint.Api/              # ASP.NET Core Web API & Swagger UI
 │   │   ├── Controllers/            # ShadesController, BasesController, TintController, DispenseJobsController
 │   │   ├── Middleware/             # ExceptionHandlingMiddleware
 │   │   └── Dockerfile              # Docker containerization
-│   └── PaintTint.Wpf/              # WPF desktop application (MVVM)
-│       ├── ViewModels/             # MainViewModel, ObservableObject (CommunityToolkit.Mvvm)
-│       ├── Services/               # TintApiClient with async HttpClient
+│   └── PaintTint.Wpf/              # WPF desktop application (MVVM with CommunityToolkit)
+│       ├── Interfaces/             # Dedicated client interface contracts
+│       │   └── ITintApiClient.cs   # Strongly-typed HTTP REST client interface
+│       ├── ViewModels/             # MainViewModel (ObservableObject, RelayCommands)
+│       ├── Services/               # TintApiClient implementation with HttpClient
 │       ├── Converters/             # HexToBrushConverter, SafeBooleanToVisibilityConverter
 │       └── Styles/                 # Theme.xaml (ResourceDictionary design system)
 ├── tests/
 │   └── PaintTint.Tests/            # xUnit tests covering scaling, rounding, limits & pricing
 ├── data/
 │   └── seed.json                   # Appendix seed dataset + realistic test shades
-├── docs/screenshots/               # App preview screenshots
+├── docs/screenshots/               # High-resolution application preview screenshots
 └── docker-compose.yml              # Multi-container orchestrator for API
 ```
 
@@ -86,7 +97,74 @@ PaintTint-Formula-Calculator/
 - **`DispenseJobs`**: `Id` (PK), `ShadeId` (FK), `BaseId` (FK), `CanSizeLitres` (decimal 5,2), `TotalColorantMl` (decimal 10,2), `TintPercent` (decimal 5,2), `TotalPrice` (decimal 12,2), `CreatedAtUtc` (datetime2).
 - **`DispenseJobItems`**: `Id` (PK), `DispenseJobId` (FK, cascade delete), `ColorantId` (FK), `DispensedMl` (decimal 10,2), `Cost` (decimal 10,2).
 
-> **Design note**: All financial and quantity columns use `decimal`, never floating-point types, guaranteeing exact arithmetic.
+> **Design note**: All financial and quantity columns use `decimal`, never floating-point types, guaranteeing exact arithmetic without precision loss.
+
+---
+
+## 🔌 REST API Endpoints
+
+The Web API provides standard RESTful endpoints documented via Swagger UI:
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/api/shades?search={q}` | Search and filter paint shades by name or code. |
+| `GET` | `/api/shades/{id}` | Get shade details with formula items for all compatible bases. |
+| `GET` | `/api/bases` | Retrieve all paint base options with tint limits and pricing. |
+| `POST` | `/api/tint/calculate` | Calculate scaled colorants, percentage, and total price. |
+| `POST` | `/api/dispensejobs` | Execute and record a new dispense job. |
+| `GET` | `/api/dispensejobs/recent?limit={n}` | Retrieve the latest dispense jobs with dispensed colorant details. |
+
+### Sample Calculation Request (`POST /api/tint/calculate`)
+```json
+{
+  "shadeId": 1,
+  "baseId": 2,
+  "canSizeLitres": 4.0
+}
+```
+
+### Sample Calculation Response
+```json
+{
+  "shadeId": 1,
+  "shadeCode": "SH001",
+  "shadeName": "Ocean Mist",
+  "hexColor": "#4A90E2",
+  "baseId": 2,
+  "baseName": "Medium",
+  "maxTintPercent": 6.00,
+  "canSizeLitres": 4.0,
+  "basePricePerLitre": 260.00,
+  "baseCost": 1040.00,
+  "colorantsCost": 64.40,
+  "totalColorantMl": 14.80,
+  "tintPercent": 0.37,
+  "maxAllowedColorantMl": 240.00,
+  "totalPrice": 1104.40,
+  "isValid": true,
+  "validationError": null,
+  "items": [
+    {
+      "colorantId": 3,
+      "code": "BL",
+      "name": "Phthalo Blue",
+      "mlPerLitre": 2.50,
+      "scaledMl": 10.00,
+      "costPerMl": 4.50,
+      "cost": 45.00
+    },
+    {
+      "colorantId": 2,
+      "code": "BK",
+      "name": "Carbon Black",
+      "mlPerLitre": 1.20,
+      "scaledMl": 4.80,
+      "costPerMl": 4.0416,
+      "cost": 19.40
+    }
+  ]
+}
+```
 
 ---
 
@@ -94,7 +172,7 @@ PaintTint-Formula-Calculator/
 
 ### Prerequisites
 - [.NET 8.0 SDK](https://dotnet.microsoft.com/download/dotnet/8.0) or later.
-- Windows OS (for running the WPF client).
+- Windows 10/11 OS (for running the WPF client).
 
 ### 1. Build the Solution
 ```bash
@@ -102,9 +180,9 @@ dotnet build PaintTint.sln
 ```
 
 ### 2. Run the Unit Tests
-All 20 unit tests validate rounding, linear scaling across 1L/4L/10L/20L cans, tint limit exceptions, and pricing:
+All 20 unit tests validate dispenser rounding, linear scaling across 1L/4L/10L/20L cans, tint limit enforcement, and pricing:
 ```bash
-dotnet test
+dotnet test PaintTint.sln
 ```
 
 ### 3. Run the Web API
@@ -114,7 +192,7 @@ dotnet run --project src/PaintTint.Api/PaintTint.Api.csproj --launch-profile htt
 ```
 The API starts on `http://localhost:5000`.
 - **Interactive Swagger Documentation**: Open `http://localhost:5000/swagger` in your browser.
-- Database (`painttint.db`) is automatically migrated and seeded with initial bases, colorants, and shades from `seed.json` on startup.
+- The SQLite database (`painttint.db`) is automatically migrated and seeded with initial bases, colorants, and shades from `seed.json` on startup.
 
 ### 4. Run the WPF Desktop Client
 In a separate terminal or Visual Studio:
@@ -122,16 +200,16 @@ In a separate terminal or Visual Studio:
 dotnet run --project src/PaintTint.Wpf/PaintTint.Wpf.csproj
 ```
 
-Alternatively, run the compiled binary:
+Alternatively, run the precompiled workstation executable:
 ```bash
 src\PaintTint.Wpf\bin\Debug\net8.0-windows\PaintTint.Wpf.exe
 ```
 
 ---
 
-## 🐳 Optional Docker Setup (Bonus Feature)
+## 🐳 Docker Deployment
 
-To run the Web API and SQLite database inside a Docker container:
+To run the Web API and SQLite database inside a lightweight Docker container:
 ```bash
 docker compose up --build
 ```
@@ -139,9 +217,9 @@ The API and Swagger will be available at `http://localhost:5000/swagger`.
 
 ---
 
-## 🧪 Unit Tests Summary
+## 🧪 Unit Tests Specification
 
-The test suite in [`PaintTint.Tests`](file:///d:/Repo/Paint-Tint-Formula-Calculator/tests/PaintTint.Tests/TintCalculatorTests.cs) covers:
+The test suite in [`tests/PaintTint.Tests/TintCalculatorTests.cs`](tests/PaintTint.Tests/TintCalculatorTests.cs) rigorously tests:
 1. **Dispenser Unit Rounding**: Verifies 0.05 ml boundary conditions (e.g. `0.02` -> `0.00`, `0.03` -> `0.05`, `0.075` -> `0.10`, `4.35`, `12.80`).
 2. **Linear Scaling**: Verifies exact scaling across 1L, 4L, 10L, and 20L cans.
 3. **Specification Worked Example**: 3.2 ml/L Black in Medium base for 4L can = 12.8 ml (0.32% tint vs 6% max, price ₹1,090.24).
@@ -152,9 +230,11 @@ The test suite in [`PaintTint.Tests`](file:///d:/Repo/Paint-Tint-Formula-Calcula
 
 ---
 
-## 💡 Assumptions & Design Decisions
+## 💡 Key Architectural & Design Decisions
 
-1. **Database Selection**: SQLite was chosen as the default relational provider because it runs zero-configuration cross-platform, stores schema in a single file (`painttint.db`), and supports full ACID transactions and foreign keys.
-2. **Currency**: As shown in the assignment layout specification, prices are displayed using the Indian Rupee symbol ($\text{₹}$) with standard 2-decimal formatting and thousand separators.
-3. **API Resilience**: The WPF desktop client performs non-blocking asynchronous calls (`async`/`await`), features a status bar with live API connection indicators, and gracefully recovers if the API restarts.
-4. **Theme Consistency**: All colors, fonts, margins, and control templates are centralized in [`Styles/Theme.xaml`](file:///d:/Repo/Paint-Tint-Formula-Calculator/src/PaintTint.Wpf/Styles/Theme.xaml) without hardcoded inline values.
+1. **Separated Interfaces**: Dedicated `Interfaces/` directories (`PaintTint.Core/Interfaces/` and `PaintTint.Wpf/Interfaces/`) guarantee clean decoupling, testability, and adherence to SOLID principles.
+2. **Complete XML Documentation**: All interfaces, classes, methods, and properties have comprehensive XML comments for developer ergonomics and auto-generated API documentation.
+3. **Database Selection**: SQLite was chosen as the default relational provider because it runs zero-configuration cross-platform, stores schema in a single file (`painttint.db`), and supports full ACID transactions and foreign keys.
+4. **Currency**: As specified in the assignment layout, prices are formatted with the Indian Rupee symbol ($\text{₹}$) with standard 2-decimal formatting and thousand separators.
+5. **API Resilience**: The WPF desktop client performs non-blocking asynchronous calls (`async`/`await`), features a status bar with live API connection indicators, auto-reconnection polling, and gracefully recovers if the API restarts.
+6. **Theme Consistency**: All colors, fonts, margins, and control templates are centralized in [`src/PaintTint.Wpf/Styles/Theme.xaml`](src/PaintTint.Wpf/Styles/Theme.xaml) without hardcoded inline values.
