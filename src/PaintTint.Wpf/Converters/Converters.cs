@@ -47,13 +47,30 @@ public class InverseBooleanConverter : IValueConverter
     }
 }
 
+public class SafeBooleanToVisibilityConverter : IValueConverter
+{
+    public bool Invert { get; set; }
+
+    public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        bool b = value is bool val && val;
+        if (Invert) b = !b;
+        return b ? Visibility.Visible : Visibility.Collapsed;
+    }
+
+    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        throw new NotSupportedException();
+    }
+}
+
 public class NullToVisibilityConverter : IValueConverter
 {
     public bool Invert { get; set; }
 
     public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        bool isNull = value == null || (value is string s && string.IsNullOrWhiteSpace(s));
+        bool isNull = value == null || (value is string s && string.IsNullOrWhiteSpace(s)) || (value is int count && count == 0);
         if (Invert) isNull = !isNull;
         return isNull ? Visibility.Collapsed : Visibility.Visible;
     }

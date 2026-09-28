@@ -4,12 +4,26 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:viewmodels="clr-namespace:PaintTint.Wpf.ViewModels"
+        xmlns:converters="clr-namespace:PaintTint.Wpf.Converters"
         mc:Ignorable="d"
         Title="Tint Studio - Paint Tint Formula Calculator"
         Height="780" Width="1320"
         MinHeight="720" MinWidth="1280"
         WindowStartupLocation="CenterScreen"
         Background="{StaticResource WindowBackgroundBrush}">
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Styles/Theme.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <converters:HexToBrushConverter x:Key="HexToBrushConverter" />
+            <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+            <converters:SafeBooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+            <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
+        </ResourceDictionary>
+    </Window.Resources>
 
     <Window.InputBindings>
         <KeyBinding Key="Enter" Command="{Binding SearchShadesCommand}" />
@@ -50,7 +64,7 @@
 
                 <!-- Store Info & Actions -->
                 <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                    <Border Background="#0F172A" BorderBrush="{StaticResource CardBorderBrush}" BorderThickness="1" CornerRadius="6" Padding="14,6" Margin="0,0,12,0">
+                    <Border Background="{StaticResource InputBackgroundBrush}" BorderBrush="{StaticResource CardBorderBrush}" BorderThickness="1" CornerRadius="6" Padding="14,6" Margin="0,0,12,0">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="Store: " Style="{StaticResource CaptionStyle}" VerticalAlignment="Center" />
                             <TextBlock Text="Demo Store 01" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" VerticalAlignment="Center" />
@@ -150,11 +164,11 @@
                                             <ControlTemplate.Triggers>
                                                 <Trigger Property="IsMouseOver" Value="True">
                                                     <Setter TargetName="itemBorder" Property="BorderBrush" Value="{StaticResource PrimaryAccentBrush}" />
-                                                    <Setter TargetName="itemBorder" Property="Background" Value="#1E293B" />
+                                                    <Setter TargetName="itemBorder" Property="Background" Value="{StaticResource CardBackgroundBrush}" />
                                                 </Trigger>
                                                 <Trigger Property="IsSelected" Value="True">
                                                     <Setter TargetName="itemBorder" Property="BorderBrush" Value="{StaticResource PrimaryAccentBrush}" />
-                                                    <Setter TargetName="itemBorder" Property="Background" Value="#172554" />
+                                                    <Setter TargetName="itemBorder" Property="Background" Value="{StaticResource ItemSelectedBackgroundBrush}" />
                                                     <Setter TargetName="itemBorder" Property="BorderThickness" Value="2" />
                                                 </Trigger>
                                             </ControlTemplate.Triggers>
@@ -189,7 +203,7 @@
                                     </StackPanel>
 
                                     <!-- Hex Tag -->
-                                    <Border Grid.Column="2" Background="#0F172A" CornerRadius="4" Padding="6,2" VerticalAlignment="Center">
+                                    <Border Grid.Column="2" Background="{StaticResource InputBackgroundBrush}" CornerRadius="4" Padding="6,2" VerticalAlignment="Center">
                                         <TextBlock Text="{Binding HexColor}" FontSize="11" FontFamily="Consolas" Foreground="{StaticResource TextMutedBrush}" />
                                     </Border>
                                 </Grid>
@@ -221,7 +235,7 @@
 
                     <!-- 0. Shade Header with Large Swatch -->
                     <Border Grid.Row="0"
-                            Background="#172033"
+                            Background="{StaticResource DataGridAltRowBrush}"
                             BorderBrush="{StaticResource CardBorderBrush}"
                             BorderThickness="1"
                             CornerRadius="8"
@@ -250,7 +264,7 @@
                                                Style="{StaticResource HeadingStyle}"
                                                FontSize="22"
                                                Margin="0,0,12,0" />
-                                    <Border Background="#2563EB" CornerRadius="4" Padding="8,2" VerticalAlignment="Center">
+                                    <Border Background="{StaticResource PrimaryAccentBrush}" CornerRadius="4" Padding="8,2" VerticalAlignment="Center">
                                         <TextBlock Text="{Binding SelectedShade.Code, FallbackValue='--'}"
                                                    FontWeight="Bold"
                                                    FontSize="12"
@@ -318,7 +332,7 @@
 
                     <!-- 2. Formula Colorants Grid -->
                     <Border Grid.Row="2"
-                            Background="#0F172A"
+                            Background="{StaticResource InputBackgroundBrush}"
                             BorderBrush="{StaticResource CardBorderBrush}"
                             BorderThickness="1"
                             CornerRadius="8"
@@ -343,7 +357,7 @@
                                     <DataGridTemplateColumn Header="Code" Width="120">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
-                                                <Border Background="#1E293B" CornerRadius="4" Padding="6,2" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                                <Border Background="{StaticResource CardBackgroundBrush}" CornerRadius="4" Padding="6,2" HorizontalAlignment="Left" VerticalAlignment="Center">
                                                     <TextBlock Text="{Binding Code}" FontFamily="Consolas" FontWeight="SemiBold" Foreground="{StaticResource TextSecondaryBrush}" />
                                                 </Border>
                                             </DataTemplate>
@@ -414,7 +428,7 @@
 
                     <!-- 4. Dispense Station Summary & Primary Action Button -->
                     <Border Grid.Row="4"
-                            Background="#172033"
+                            Background="{StaticResource DataGridAltRowBrush}"
                             BorderBrush="{StaticResource CardBorderBrush}"
                             BorderThickness="1"
                             CornerRadius="8"
@@ -542,7 +556,7 @@
         <!-- 4. BUSY / LOADING SPINNER OVERLAY          -->
         <!-- ========================================== -->
         <Grid Grid.RowSpan="3"
-              Background="#88000000"
+              Background="{StaticResource OverlayBrush}"
               Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}"
               IsHitTestVisible="True">
             <Border Background="{StaticResource CardBackgroundBrush}"
@@ -571,7 +585,7 @@
                 HorizontalAlignment="Right"
                 VerticalAlignment="Top"
                 Margin="0,16,36,0"
-                Background="#064E3B"
+                Background="{StaticResource ToastBackgroundBrush}"
                 BorderBrush="{StaticResource SuccessBrush}"
                 BorderThickness="1"
                 CornerRadius="8"
@@ -598,7 +612,7 @@
         <!-- 6. DISPENSE HISTORY DRAWER (MODAL)         -->
         <!-- ========================================== -->
         <Grid Grid.RowSpan="3"
-              Background="#AA000000"
+              Background="{StaticResource ModalOverlayBrush}"
               Visibility="{Binding IsHistoryOpen, Converter={StaticResource BooleanToVisibilityConverter}}">
             <Border Width="850" MaxHeight="600"
                     Style="{StaticResource CardBorderStyle}"

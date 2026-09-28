@@ -9,13 +9,15 @@ public partial class MainWindow : Window
 {
     private readonly MainViewModel _viewModel;
 
-    public MainWindow()
+    public MainWindow() : this(new MainViewModel(new TintApiClient("http://localhost:5000")))
     {
-        InitializeComponent();
+    }
 
-        var apiClient = new TintApiClient("http://localhost:5000");
-        _viewModel = new MainViewModel(apiClient);
+    public MainWindow(MainViewModel viewModel)
+    {
+        _viewModel = viewModel;
         DataContext = _viewModel;
+        InitializeComponent();
 
         Loaded += async (s, e) =>
         {

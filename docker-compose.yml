@@ -1,0 +1,16 @@
+services:
+  painttint-api:
+    build:
+      context: .
+      dockerfile: src/PaintTint.Api/Dockerfile
+    container_name: painttint-api
+    ports:
+      - "5000:5000"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Data Source=/app/data/painttint.db
+    volumes:
+      - api-data:/app/data
+
+volumes:
+  api-data:

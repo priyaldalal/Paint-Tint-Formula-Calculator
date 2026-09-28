@@ -45,6 +45,13 @@
     <SolidColorBrush x:Key="TextMutedBrush" Color="{StaticResource TextMutedColor}" />
     <SolidColorBrush x:Key="TextDisabledBrush" Color="{StaticResource TextDisabledColor}" />
 
+    <SolidColorBrush x:Key="ButtonHoverBackgroundBrush" Color="#334155" />
+    <SolidColorBrush x:Key="ItemSelectedBackgroundBrush" Color="#172554" />
+    <SolidColorBrush x:Key="DataGridAltRowBrush" Color="#172033" />
+    <SolidColorBrush x:Key="ToastBackgroundBrush" Color="#064E3B" />
+    <SolidColorBrush x:Key="OverlayBrush" Color="#88000000" />
+    <SolidColorBrush x:Key="ModalOverlayBrush" Color="#AA000000" />
+
     <SolidColorBrush x:Key="SuccessBrush" Color="{StaticResource SuccessColor}" />
     <SolidColorBrush x:Key="WarningBrush" Color="{StaticResource WarningColor}" />
     <SolidColorBrush x:Key="ErrorBrush" Color="{StaticResource ErrorColor}" />
@@ -128,7 +135,7 @@
         <Setter Property="FontFamily" Value="{StaticResource AppFontFamily}" />
         <Setter Property="FontSize" Value="{StaticResource FontSizeRegular}" />
         <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
-        <Setter Property="Background" Value="{StaticResource CardBackgroundColor}" />
+        <Setter Property="Background" Value="{StaticResource CardBackgroundBrush}" />
         <Setter Property="BorderBrush" Value="{StaticResource InputBorderBrush}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="Padding" Value="12,8" />
@@ -196,7 +203,7 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="true">
-                            <Setter TargetName="buttonBorder" Property="Background" Value="#334155"/>
+                            <Setter TargetName="buttonBorder" Property="Background" Value="{StaticResource ButtonHoverBackgroundBrush}"/>
                             <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
@@ -209,7 +216,7 @@
     <Style x:Key="ModernDataGridStyle" TargetType="DataGrid">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="RowBackground" Value="Transparent" />
-        <Setter Property="AlternatingRowBackground" Value="#172033" />
+        <Setter Property="AlternatingRowBackground" Value="{StaticResource DataGridAltRowBrush}" />
         <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
         <Setter Property="BorderBrush" Value="{StaticResource CardBorderBrush}" />
         <Setter Property="BorderThickness" Value="1" />
@@ -226,7 +233,7 @@
         <Setter Property="ColumnHeaderStyle">
             <Setter.Value>
                 <Style TargetType="DataGridColumnHeader">
-                    <Setter Property="Background" Value="#1E293B" />
+                    <Setter Property="Background" Value="{StaticResource CardBackgroundBrush}" />
                     <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
                     <Setter Property="FontWeight" Value="SemiBold" />
                     <Setter Property="Height" Value="42" />
@@ -257,7 +264,7 @@
     <!-- Modern ProgressBar Style -->
     <Style x:Key="ModernProgressBarStyle" TargetType="ProgressBar">
         <Setter Property="Height" Value="10" />
-        <Setter Property="Background" Value="#0F172A" />
+        <Setter Property="Background" Value="{StaticResource InputBackgroundBrush}" />
         <Setter Property="Foreground" Value="{StaticResource PrimaryAccentBrush}" />
         <Setter Property="BorderBrush" Value="{StaticResource CardBorderBrush}" />
         <Setter Property="BorderThickness" Value="1" />
