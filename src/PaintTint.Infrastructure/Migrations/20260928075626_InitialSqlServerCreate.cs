@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PaintTint.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitialSqlServerCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -15,11 +15,11 @@ namespace PaintTint.Infrastructure.Migrations
                 name: "Bases",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
-                    MaxTintPercent = table.Column<decimal>(type: "TEXT", precision: 5, scale: 2, nullable: false),
-                    PricePerLitre = table.Column<decimal>(type: "TEXT", precision: 10, scale: 2, nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    MaxTintPercent = table.Column<decimal>(type: "decimal(5,2)", precision: 5, scale: 2, nullable: false),
+                    PricePerLitre = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -30,11 +30,11 @@ namespace PaintTint.Infrastructure.Migrations
                 name: "Colorants",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Code = table.Column<string>(type: "TEXT", maxLength: 10, nullable: false),
-                    Name = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
-                    CostPerMl = table.Column<decimal>(type: "TEXT", precision: 10, scale: 4, nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Code = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    CostPerMl = table.Column<decimal>(type: "decimal(10,4)", precision: 10, scale: 4, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -45,11 +45,11 @@ namespace PaintTint.Infrastructure.Migrations
                 name: "Shades",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Code = table.Column<string>(type: "TEXT", maxLength: 20, nullable: false),
-                    Name = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
-                    HexColor = table.Column<string>(type: "TEXT", maxLength: 7, nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Code = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    HexColor = table.Column<string>(type: "nvarchar(7)", maxLength: 7, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -60,15 +60,15 @@ namespace PaintTint.Infrastructure.Migrations
                 name: "DispenseJobs",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    ShadeId = table.Column<int>(type: "INTEGER", nullable: false),
-                    BaseId = table.Column<int>(type: "INTEGER", nullable: false),
-                    CanSizeLitres = table.Column<decimal>(type: "TEXT", precision: 5, scale: 2, nullable: false),
-                    TotalColorantMl = table.Column<decimal>(type: "TEXT", precision: 10, scale: 2, nullable: false),
-                    TintPercent = table.Column<decimal>(type: "TEXT", precision: 5, scale: 2, nullable: false),
-                    TotalPrice = table.Column<decimal>(type: "TEXT", precision: 12, scale: 2, nullable: false),
-                    CreatedAtUtc = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP")
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ShadeId = table.Column<int>(type: "int", nullable: false),
+                    BaseId = table.Column<int>(type: "int", nullable: false),
+                    CanSizeLitres = table.Column<decimal>(type: "decimal(5,2)", precision: 5, scale: 2, nullable: false),
+                    TotalColorantMl = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: false),
+                    TintPercent = table.Column<decimal>(type: "decimal(5,2)", precision: 5, scale: 2, nullable: false),
+                    TotalPrice = table.Column<decimal>(type: "decimal(12,2)", precision: 12, scale: 2, nullable: false),
+                    CreatedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()")
                 },
                 constraints: table =>
                 {
@@ -91,12 +91,12 @@ namespace PaintTint.Infrastructure.Migrations
                 name: "FormulaItems",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    ShadeId = table.Column<int>(type: "INTEGER", nullable: false),
-                    BaseId = table.Column<int>(type: "INTEGER", nullable: false),
-                    ColorantId = table.Column<int>(type: "INTEGER", nullable: false),
-                    MlPerLitre = table.Column<decimal>(type: "TEXT", precision: 10, scale: 4, nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ShadeId = table.Column<int>(type: "int", nullable: false),
+                    BaseId = table.Column<int>(type: "int", nullable: false),
+                    ColorantId = table.Column<int>(type: "int", nullable: false),
+                    MlPerLitre = table.Column<decimal>(type: "decimal(10,4)", precision: 10, scale: 4, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -125,12 +125,12 @@ namespace PaintTint.Infrastructure.Migrations
                 name: "DispenseJobItems",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    DispenseJobId = table.Column<int>(type: "INTEGER", nullable: false),
-                    ColorantId = table.Column<int>(type: "INTEGER", nullable: false),
-                    DispensedMl = table.Column<decimal>(type: "TEXT", precision: 10, scale: 2, nullable: false),
-                    Cost = table.Column<decimal>(type: "TEXT", precision: 10, scale: 2, nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    DispenseJobId = table.Column<int>(type: "int", nullable: false),
+                    ColorantId = table.Column<int>(type: "int", nullable: false),
+                    DispensedMl = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: false),
+                    Cost = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: false)
                 },
                 constraints: table =>
                 {

@@ -8,7 +8,7 @@ public class PaintTintDbContextFactory : IDesignTimeDbContextFactory<PaintTintDb
     public PaintTintDbContext CreateDbContext(string[] args)
     {
         var optionsBuilder = new DbContextOptionsBuilder<PaintTintDbContext>();
-        optionsBuilder.UseSqlite("Data Source=painttint.db");
+        optionsBuilder.UseSqlServer("Server=PRIYAL\\SQLEXPRESS;Database=PaintTintDb;Trusted_Connection=True;TrustServerCertificate=True;MultipleActiveResultSets=true;");
 
         return new PaintTintDbContext(optionsBuilder.Options);
     }

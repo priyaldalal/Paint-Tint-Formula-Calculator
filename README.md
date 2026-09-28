@@ -87,15 +87,22 @@ PaintTint-Formula-Calculator/
 
 ## 🗄️ Database Design
 
+### Database Engine & Server Configuration
+- **Server Instance**: `PRIYAL\SQLEXPRESS` (Microsoft SQL Server Express 2022)
+- **Database Name**: `PaintTintDb`
+- **Authentication**: Windows Integrated Authentication (`Trusted_Connection=True;TrustServerCertificate=True;`)
+- **Connection String**: Configured in [`src/PaintTint.Api/appsettings.json`](src/PaintTint.Api/appsettings.json)
+- **Provider**: Entity Framework Core 8 (`Microsoft.EntityFrameworkCore.SqlServer`)
+
 ### Schema Overview
 
-- **`Bases`**: `Id` (PK), `Name` (Unique, max 50), `MaxTintPercent` (decimal 5,2), `PricePerLitre` (decimal 10,2).
-- **`Colorants`**: `Id` (PK), `Code` (Unique, max 10), `Name` (max 50), `CostPerMl` (decimal 10,4).
-- **`Shades`**: `Id` (PK), `Code` (Unique, max 20), `Name` (Indexed for search, max 100), `HexColor` (char 7).
-- **`FormulaItems`**: `Id` (PK), `ShadeId` (FK), `BaseId` (FK), `ColorantId` (FK), `MlPerLitre` (decimal 10,4).
+- **`Bases`**: `Id` (PK IDENTITY), `Name` (nvarchar(50), Unique), `MaxTintPercent` (decimal(5,2)), `PricePerLitre` (decimal(10,2)).
+- **`Colorants`**: `Id` (PK IDENTITY), `Code` (nvarchar(10), Unique), `Name` (nvarchar(50)), `CostPerMl` (decimal(10,4)).
+- **`Shades`**: `Id` (PK IDENTITY), `Code` (nvarchar(20), Unique), `Name` (nvarchar(100), Indexed for search), `HexColor` (nvarchar(7)).
+- **`FormulaItems`**: `Id` (PK IDENTITY), `ShadeId` (FK), `BaseId` (FK), `ColorantId` (FK), `MlPerLitre` (decimal(10,4)).
   - *Unique Index*: `(ShadeId, BaseId, ColorantId)` ensures no duplicate colorant definitions per base.
-- **`DispenseJobs`**: `Id` (PK), `ShadeId` (FK), `BaseId` (FK), `CanSizeLitres` (decimal 5,2), `TotalColorantMl` (decimal 10,2), `TintPercent` (decimal 5,2), `TotalPrice` (decimal 12,2), `CreatedAtUtc` (datetime2).
-- **`DispenseJobItems`**: `Id` (PK), `DispenseJobId` (FK, cascade delete), `ColorantId` (FK), `DispensedMl` (decimal 10,2), `Cost` (decimal 10,2).
+- **`DispenseJobs`**: `Id` (PK IDENTITY), `ShadeId` (FK), `BaseId` (FK), `CanSizeLitres` (decimal(5,2)), `TotalColorantMl` (decimal(10,2)), `TintPercent` (decimal(5,2)), `TotalPrice` (decimal(12,2)), `CreatedAtUtc` (datetime2, default `GETUTCDATE()`).
+- **`DispenseJobItems`**: `Id` (PK IDENTITY), `DispenseJobId` (FK, cascade delete), `ColorantId` (FK), `DispensedMl` (decimal(10,2)), `Cost` (decimal(10,2)).
 
 > **Design note**: All financial and quantity columns use `decimal`, never floating-point types, guaranteeing exact arithmetic without precision loss.
 

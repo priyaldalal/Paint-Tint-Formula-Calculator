@@ -12,12 +12,12 @@ var builder = WebApplication.CreateBuilder(args);
 // 1. Add services to DI container
 builder.Services.AddControllers();
 
-// Database context
+// Database context (Microsoft SQL Server: PRIYAL\SQLEXPRESS)
 string connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
-    ?? "Data Source=painttint.db";
+    ?? "Server=PRIYAL\\SQLEXPRESS;Database=PaintTintDb;Trusted_Connection=True;TrustServerCertificate=True;MultipleActiveResultSets=true;";
 
 builder.Services.AddDbContext<PaintTintDbContext>(options =>
-    options.UseSqlite(connectionString));
+    options.UseSqlServer(connectionString));
 
 // Domain & Application Services
 builder.Services.AddSingleton<ITintCalculator, TintCalculator>();

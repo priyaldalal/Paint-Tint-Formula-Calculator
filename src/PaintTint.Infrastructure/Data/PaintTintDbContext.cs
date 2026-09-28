@@ -84,7 +84,7 @@ public class PaintTintDbContext : DbContext
             entity.Property(e => e.TotalColorantMl).IsRequired().HasPrecision(10, 2);
             entity.Property(e => e.TintPercent).IsRequired().HasPrecision(5, 2);
             entity.Property(e => e.TotalPrice).IsRequired().HasPrecision(12, 2);
-            entity.Property(e => e.CreatedAtUtc).IsRequired().HasDefaultValueSql("CURRENT_TIMESTAMP");
+            entity.Property(e => e.CreatedAtUtc).IsRequired().HasDefaultValueSql("GETUTCDATE()");
 
             entity.HasOne(e => e.Shade)
                   .WithMany(s => s.DispenseJobs)
